@@ -1,0 +1,6 @@
+$ mysqldump -u root -p mysql_e2p1 > db_backup.sql
+
+mysql> CREATE DATABASE restored;
+Query OK, 1 row affected (0.00 sec)
+
+$ mysql -u root -p restored < db_backup.sql
