@@ -1,0 +1,105 @@
+mysql> CREATE TABLE Branch (
+    -> BCode VARCHAR(5),
+    -> Librarian VARCHAR(50),
+    -> Address VARCHAR(100),
+    -> PRIMARY KEY(BCode)
+    -> );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> CREATE TABLE Titles (
+    -> Title VARCHAR(40),
+    -> Author VARCHAR(30),
+    -> Publisher VARCHAR(40),
+    -> PRIMARY KEY(Title)
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> CREATE TABLE Holdings (
+    -> Branch VARCHAR(5),
+    -> Title VARCHAR(40),
+    -> `#copies` INT,
+    -> PRIMARY KEY (Branch, Title),
+    -> FOREIGN KEY (Branch) REFERENCES Branch(BCode),
+    -> FOREIGN KEY (Title) REFERENCES Titles(Title)
+    -> );
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> INSERT INTO Branch
+    -> VALUES ('B1', 'John Smith', '24 Anglesea Rd'),
+    -> ('B2', 'Mary Jones', '34 Pearse St'),
+    -> ('B3', 'Francis Owens', 'Grange X');
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Titles VALUES
+    -> ('Susannah', 'Ann Brown', 'Macmillan'),
+    -> ('How to Fish', 'Amy Fly', 'Stop Press'),
+    -> ('A History of Dublin', 'David Little', 'Wiley'),    -> ('Computers', 'Blaise Pascal', 'Applewoods'),
+    -> ('The Wife', 'Ann Brown', 'Macmillan');
+Query OK, 5 rows affected (0.05 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Holdings VALUES
+    -> ('B1', 'Susannah', 3),
+    -> ('B1', 'How to Fish', 2),
+    -> ('B1', 'A History of Dublin', 1),
+    -> ('B2', 'How to Fish', 4),
+    -> ('B2', 'Computers', 2),
+    -> ('B2', 'The Wife', 3),
+    -> ('B3', 'A History of Dublin', 1),
+    -> ('B3', 'Computers', 4),
+    -> ('B3', 'Susannah', 3),
+    -> ('B3', 'The Wife', 1);
+Query OK, 10 rows affected (0.06 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> SELECT Title
+    -> FROM Titles
+    -> WHERE Publisher LIKE 'Macmillan';
++----------+
+| Title    |
++----------+
+| Susannah |
+| The Wife |
++----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT Branch
+    -> FROM Holdings
+    -> WHERE Title IN
+    -> (SELECT Title
+    -> FROM Titles
+    -> WHERE Author LIKE 'Ann Brown');
++--------+
+| Branch |
++--------+
+| B1     |
+| B2     |
+| B3     |
++--------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT Branch
+    -> FROM Holdings JOIN Titles
+    -> USING (Title)
+    -> WHERE Author LIKE 'Ann Brown';
++--------+
+| Branch |
++--------+
+| B1     |
+| B3     |
+| B2     |
++--------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT Branch, SUM(`#copies`) AS 'Number of Books'
+    -> FROM Holdings
+    -> GROUP BY Branch;
++--------+-----------------+
+| Branch | Number of Books |
++--------+-----------------+
+| B1     |               6 |
+| B2     |               9 |
+| B3     |               9 |
++--------+-----------------+
+3 rows in set (0.00 sec)
