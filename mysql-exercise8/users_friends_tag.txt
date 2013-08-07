@@ -129,7 +129,7 @@ mysql> SELECT images.id AS image_id
     -> ON image_user = friend
     -> JOIN users
     -> ON user_id = users.id
-    -> WHERE name LIKE 'Rahul';
+    -> WHERE name = 'Rahul';
 +----------+
 | image_id |
 +----------+
