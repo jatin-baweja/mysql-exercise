@@ -83,7 +83,7 @@ Records: 8  Duplicates: 0  Warnings: 0
 mysql> SELECT Article
     -> FROM Articles JOIN Users
     -> ON Author = Users.Id
-    -> WHERE Name LIKE 'user3';
+    -> WHERE Name = 'user3';
 +---------------------------+
 | Article                   |
 +---------------------------+
@@ -98,7 +98,7 @@ mysql> SELECT Article, GROUP_CONCAT(Comment SEPARATOR ', ') AS Comments
     -> ON Article_Id = Articles.Id
     -> JOIN Users
     -> ON Author = Users.Id
-    -> WHERE Name LIKE 'user3'
+    -> WHERE Name = 'user3'
     -> GROUP BY Articles.Id;
 +---------------------------+----------------------------------------------+
 | Article                   | Comments                                     |
