@@ -55,7 +55,7 @@ Records: 10  Duplicates: 0  Warnings: 0
 
 mysql> SELECT Title
     -> FROM Titles
-    -> WHERE Publisher LIKE 'Macmillan';
+    -> WHERE Publisher = 'Macmillan';
 +----------+
 | Title    |
 +----------+
@@ -69,7 +69,7 @@ mysql> SELECT DISTINCT Branch
     -> WHERE Title IN
     -> (SELECT Title
     -> FROM Titles
-    -> WHERE Author LIKE 'Ann Brown');
+    -> WHERE Author = 'Ann Brown');
 +--------+
 | Branch |
 +--------+
@@ -82,7 +82,7 @@ mysql> SELECT DISTINCT Branch
 mysql> SELECT DISTINCT Branch
     -> FROM Holdings JOIN Titles
     -> USING (Title)
-    -> WHERE Author LIKE 'Ann Brown';
+    -> WHERE Author = 'Ann Brown';
 +--------+
 | Branch |
 +--------+
