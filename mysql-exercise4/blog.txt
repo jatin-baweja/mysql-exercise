@@ -74,9 +74,9 @@ mysql> INSERT INTO Comments (Comment, Article_Id, Commenter) VALUES
     -> ('Another Comment', 1, 6),
     -> ('Just a Comment', 3, 5),
     -> ('Just another Comment', 3, 7),
-    -> ('A new Comment', 4, 8);
+    -> ('A new Comment', 4, 8),
     -> ('2nd Article Comment 1', 2, 8),
-    -> ('2nd Article Comment 2', 2, 5),
+    -> ('2nd Article Comment 2', 2, 5);
 Query OK, 8 rows affected (0.12 sec)
 Records: 8  Duplicates: 0  Warnings: 0
 
