@@ -42,8 +42,8 @@ mysql> INSERT INTO Users (Name, Type)
     -> ('Divya', 'normal'),
     -> ('Ankit', 'normal'),
     -> ('Rahul', 'normal'),
-    -> ('Vidit', 'normal');
-    -> ('Kulraj', 'normal');
+    -> ('Vidit', 'normal'),
+    -> ('Kulraj', 'normal'),
     -> ('user3', 'normal');
 Query OK, 9 rows affected (0.04 sec)
 Records: 9  Duplicates: 0  Warnings: 0
