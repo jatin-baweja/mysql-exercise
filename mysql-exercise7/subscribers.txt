@@ -1,8 +1,8 @@
 mysql> CREATE TABLE email_subscribers (
-    -> Email VARCHAR(40),
-    -> Phone_Number VARCHAR(10),
-    -> City VARCHAR(30),
-    -> PRIMARY KEY(Email)
+    -> email VARCHAR(40),
+    -> phone_number VARCHAR(10),
+    -> city VARCHAR(30),
+    -> PRIMARY KEY(email)
     -> );
 Query OK, 0 rows affected (0.13 sec)
 
@@ -13,9 +13,9 @@ mysql_ex6.email_subscribers: Records: 200  Deleted: 0  Skipped: 0  Warnings: 0
 
 #Q. What all cities did people respond from?
 
-mysql> SELECT DISTINCT City FROM email_subscribers;
+mysql> SELECT DISTINCT city FROM email_subscribers;
 +----------+
-| City     |
+| city     |
 +----------+
 | Chennai  |
 | Delhi    |
@@ -27,11 +27,11 @@ mysql> SELECT DISTINCT City FROM email_subscribers;
 
 #Q. How many people responded from each city?
 
-mysql> SELECT City, COUNT(*) AS 'Respondents From City'
+mysql> SELECT city, COUNT(*) AS 'Respondents From City'
     -> FROM email_subscribers
-    -> GROUP BY City;
+    -> GROUP BY city;
 +----------+-----------------------+
-| City     | Respondents From City |
+| city     | Respondents From City |
 +----------+-----------------------+
 | Chennai  |                    42 |
 | Delhi    |                    40 |
@@ -43,13 +43,17 @@ mysql> SELECT City, COUNT(*) AS 'Respondents From City'
 
 #Q. Which city were the maximum respondents from?
 
-mysql> SELECT City
+mysql> SELECT city
     -> FROM email_subscribers
-    -> GROUP BY City
+    -> GROUP BY city
+    -> HAVING COUNT(*) =
+    -> (SELECT COUNT(*)
+    -> FROM email_subscribers
+    -> GROUP BY city
     -> ORDER BY COUNT(*) DESC
-    -> LIMIT 1;
+    -> LIMIT 1);
 +---------+
-| City    |
+| city    |
 +---------+
 | Chennai |
 +---------+
@@ -57,7 +61,7 @@ mysql> SELECT City
 
 #Q. What all email domains did people respond from ?
 
-mysql> SELECT DISTINCT SUBSTRING_INDEX(Email, '@', -1) AS Email_Domain
+mysql> SELECT DISTINCT SUBSTRING_INDEX(email, '@', -1) AS Email_Domain
     -> FROM email_subscribers;
 +--------------+
 | Email_Domain |
@@ -71,14 +75,19 @@ mysql> SELECT DISTINCT SUBSTRING_INDEX(Email, '@', -1) AS Email_Domain
 
 #Q. Which is the most popular email domain among the respondents ?
 
-mysql> SELECT SUBSTRING_INDEX(Email, '@', -1) AS 'Email Domain'
+mysql> SELECT SUBSTRING_INDEX(email, '@', -1) AS 'Email Domain'
     -> FROM email_subscribers
-    -> GROUP BY 'Email Domain'
-    -> ORDER BY COUNT(*)
-    -> LIMIT 1;
+    -> GROUP BY 1
+    -> HAVING COUNT(*) =
+    -> (SELECT COUNT(*)
+    -> FROM email_subscribers
+    -> GROUP BY SUBSTRING_INDEX(email, '@', -1)
+    -> ORDER BY COUNT(*) DESC
+    -> LIMIT 1);
 +--------------+
 | Email Domain |
 +--------------+
 | me.com       |
+| yahoo.com    |
 +--------------+
-1 row in set (0.00 sec)
+2 rows in set (0.00 sec)
