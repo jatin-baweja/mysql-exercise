@@ -1,41 +1,41 @@
-mysql> CREATE TABLE Users (
-    -> Id INT AUTO_INCREMENT,
-    -> Name VARCHAR(30),
-    -> Type ENUM ('admin', 'normal'),
-    -> PRIMARY KEY(Id)
-    -> );
-Query OK, 0 rows affected (0.14 sec)
-
-mysql> CREATE TABLE Categories (
-    -> Id INT AUTO_INCREMENT,
-    -> Category VARCHAR(20),
-    -> PRIMARY KEY (Id)
-    -> );
-Query OK, 0 rows affected (0.12 sec)
-
-mysql> CREATE TABLE Articles (
-    -> Id INT AUTO_INCREMENT,
-    -> Article TEXT,
-    -> Author INT,
-    -> Category_Id INT,
-    -> PRIMARY KEY (Id),
-    -> FOREIGN KEY (Author) REFERENCES Users(Id),
-    -> FOREIGN KEY (Category_Id) REFERENCES Categories(Id)
+mysql> CREATE TABLE users (
+    -> id INT AUTO_INCREMENT,
+    -> name VARCHAR(30),
+    -> type ENUM ('admin', 'normal'),
+    -> PRIMARY KEY(id)
     -> );
 Query OK, 0 rows affected (0.15 sec)
 
-mysql> CREATE TABLE Comments (
-    -> Id INT AUTO_INCREMENT,
-    -> Article_Id INT,
-    -> Comment VARCHAR(200),
-    -> Commenter INT,
-    -> PRIMARY KEY(Id),
-    -> FOREIGN KEY (Article_Id) REFERENCES Articles(Id),
-    -> FOREIGN KEY (Commenter) REFERENCES Users(Id)
+mysql> CREATE TABLE categories (
+    -> id INT AUTO_INCREMENT,
+    -> category VARCHAR(20),
+    -> PRIMARY KEY (id)
     -> );
-Query OK, 0 rows affected (0.24 sec)
+Query OK, 0 rows affected (0.16 sec)
 
-mysql> INSERT INTO Users (Name, Type)
+mysql> CREATE TABLE articles (
+    -> id INT AUTO_INCREMENT,
+    -> article TEXT,
+    -> user_id INT,
+    -> category_id INT,
+    -> PRIMARY KEY (id),
+    -> FOREIGN KEY (user_id) REFERENCES users(id),
+    -> FOREIGN KEY (category_id) REFERENCES categories(id)
+    -> );
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> CREATE TABLE comments (
+    -> id INT AUTO_INCREMENT,
+    -> article_Id INT,
+    -> comment VARCHAR(200),
+    -> user_id INT,
+    -> PRIMARY KEY(id),
+    -> FOREIGN KEY (article_id) REFERENCES articles(id),
+    -> FOREIGN KEY (user_id) REFERENCES users(id)
+    -> );
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> INSERT INTO users (name, type)
     -> VALUES ('Jatin', 'admin'),
     -> ('Sahil', 'normal'),
     -> ('Pramod', 'normal'),
@@ -48,27 +48,27 @@ mysql> INSERT INTO Users (Name, Type)
 Query OK, 9 rows affected (0.04 sec)
 Records: 9  Duplicates: 0  Warnings: 0
 
-mysql> INSERT INTO Categories (Category) VALUES
+mysql> INSERT INTO categories (category) VALUES
     -> ('Entertainment'),
     -> ('Science'),
     -> ('Technology'),
     -> ('Lifestyle'),
     -> ('Literature'),
     -> ('Arts');
-Query OK, 6 rows affected (0.13 sec)
+Query OK, 6 rows affected (0.04 sec)
 Records: 6  Duplicates: 0  Warnings: 0
 
-mysql> INSERT INTO Articles (Article, Author, Category_Id) VALUES
+mysql> INSERT INTO articles (article, user_id, category_id) VALUES
     -> ('This is a sample Article', 9, 2),
     -> ('This is a new Article', 9, 3),
     -> ('This is another Article', 2, 3),
     -> ('This is the fourth Article', 4, 4),
     -> ('This is a Technology Article', 1, 3),
     -> ('This is a Science Article', 9, 2);
-Query OK, 6 rows affected (0.05 sec)
+Query OK, 6 rows affected (0.08 sec)
 Records: 6  Duplicates: 0  Warnings: 0
 
-mysql> INSERT INTO Comments (Comment, Article_Id, Commenter) VALUES
+mysql> INSERT INTO comments (comment, article_id, user_id) VALUES
     -> ('Sample Comment', 1, 2),
     -> ('New Comment', 1, 3),
     -> ('Another Comment', 1, 6),
@@ -77,15 +77,17 @@ mysql> INSERT INTO Comments (Comment, Article_Id, Commenter) VALUES
     -> ('A new Comment', 4, 8),
     -> ('2nd Article Comment 1', 2, 8),
     -> ('2nd Article Comment 2', 2, 5);
-Query OK, 8 rows affected (0.12 sec)
+Query OK, 8 rows affected (0.07 sec)
 Records: 8  Duplicates: 0  Warnings: 0
 
-mysql> SELECT Article
-    -> FROM Articles JOIN Users
-    -> ON Author = Users.Id
-    -> WHERE Name = 'user3';
+#Query 1
+
+mysql> SELECT article
+    -> FROM articles JOIN users
+    -> ON user_id = users.id
+    -> WHERE name = 'user3';
 +---------------------------+
-| Article                   |
+| article                   |
 +---------------------------+
 | This is a sample Article  |
 | This is a new Article     |
@@ -93,15 +95,17 @@ mysql> SELECT Article
 +---------------------------+
 3 rows in set (0.00 sec)
 
-mysql> SELECT Article, GROUP_CONCAT(Comment SEPARATOR ', ') AS Comments
-    -> FROM Articles LEFT JOIN Comments
-    -> ON Article_Id = Articles.Id
-    -> JOIN Users
-    -> ON Author = Users.Id
-    -> WHERE Name = 'user3'
-    -> GROUP BY Articles.Id;
+#Query 2
+
+mysql> SELECT article, GROUP_CONCAT(comment SEPARATOR ', ') AS comments
+    -> FROM articles LEFT JOIN comments
+    -> ON article_Id = articles.Id
+    -> JOIN users
+    -> ON articles.user_id = users.id
+    -> WHERE name = 'user3'
+    -> GROUP BY articles.id;
 +---------------------------+----------------------------------------------+
-| Article                   | Comments                                     |
+| article                   | comments                                     |
 +---------------------------+----------------------------------------------+
 | This is a sample Article  | Sample Comment, New Comment, Another Comment |
 | This is a new Article     | 2nd Article Comment 1, 2nd Article Comment 2 |
@@ -109,49 +113,60 @@ mysql> SELECT Article, GROUP_CONCAT(Comment SEPARATOR ', ') AS Comments
 +---------------------------+----------------------------------------------+
 3 rows in set (0.00 sec)
 
-mysql> SELECT Article
-    -> FROM Articles LEFT JOIN Comments
-    -> ON Article_Id = Articles.Id
-    -> WHERE Comment IS NULL
-    -> GROUP BY Articles.Id;
+#Query 3
+
+mysql> SELECT article
+    -> FROM articles LEFT JOIN comments
+    -> ON article_id = articles.id
+    -> WHERE comment IS NULL
+    -> GROUP BY articles.id;
 +------------------------------+
-| Article                      |
+| article                      |
 +------------------------------+
 | This is a Technology Article |
 | This is a Science Article    |
 +------------------------------+
-2 rows in set (0.01 sec)
+2 rows in set (0.00 sec)
 
-mysql> SELECT Article
-    -> FROM Articles JOIN Comments
-    -> ON Article_Id = Articles.Id
-    -> GROUP BY Articles.Id
+#Query 4
+
+mysql> SELECT article
+    -> FROM articles JOIN comments
+    -> ON article_id = articles.id
+    -> GROUP BY articles.id
+    -> HAVING COUNT(*) =
+    -> (SELECT COUNT(*)
+    -> FROM articles JOIN comments
+    -> ON article_id = articles.id
+    -> GROUP BY articles.id
     -> ORDER BY COUNT(*) DESC
-    -> LIMIT 1;
+    -> LIMIT 1);
 +--------------------------+
-| Article                  |
+| article                  |
 +--------------------------+
 | This is a sample Article |
 +--------------------------+
 1 row in set (0.00 sec)
 
-mysql> INSERT INTO Comments (Comment, Article_Id, Commenter) VALUES
+mysql> INSERT INTO comments (comment, article_id, user_id) VALUES
     -> ('2nd comment from same user', 4, 8),
     -> ('another comment from same user', 2, 5);
 Query OK, 2 rows affected (0.05 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 
-mysql> SELECT Article
-    -> FROM Articles LEFT JOIN Comments
-    -> ON Article_Id = Articles.Id
-    -> GROUP BY Articles.Id
-    -> HAVING COUNT(Commenter) = COUNT(DISTINCT Commenter);
+#Query 5
+
+mysql> SELECT article
+    -> FROM articles LEFT JOIN comments
+    -> ON article_id = articles.id
+    -> GROUP BY articles.id
+    -> HAVING COUNT(comments.user_id) = COUNT(DISTINCT comments.user_id);
 +------------------------------+
-| Article                      |
+| article                      |
 +------------------------------+
 | This is a sample Article     |
 | This is another Article      |
 | This is a Technology Article |
 | This is a Science Article    |
 +------------------------------+
-4 rows in set (0.00 sec)
+4 rows in set (0.01 sec)
