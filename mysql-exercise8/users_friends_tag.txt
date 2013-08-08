@@ -127,9 +127,7 @@ mysql> SELECT image_id
 mysql> SELECT images.id AS image_id
     -> FROM images JOIN friends
     -> ON image_user = friend
-    -> JOIN users
-    -> ON user_id = users.id
-    -> WHERE name = 'Rahul';
+    -> WHERE user_id = 6;
 +----------+
 | image_id |
 +----------+
@@ -146,10 +144,9 @@ mysql> SELECT images.id AS image_id
 
 # Find all friends of a particular user (Say, userA) who has tagged him in all of his pics.
 mysql> SELECT friend
-    -> FROM friends JOIN users
-    -> ON users.id = user_id AND name = 'userA'
-    -> JOIN images
+    -> FROM friends JOIN images
     -> ON friend = image_user
+    -> AND user_id = 9
     -> JOIN tags
     -> ON images.id = image_id
     -> GROUP BY friend
@@ -164,16 +161,22 @@ mysql> SELECT friend
 
 # Find friend of a particular user (Say, userA) who have tagged him most no. of times.
 mysql> SELECT friend
-    -> FROM friends JOIN users
-    -> ON users.id = user_id AND name = 'userA'
-    -> JOIN images
+    -> FROM friends JOIN images
+    -> ON friend = image_user
+    -> AND user_id = 9
+    -> JOIN tags
+    -> ON images.id = image_id
+    -> GROUP BY friend
+    -> HAVING COUNT(DISTINCT image_id) =
+    -> (SELECT COUNT(DISTINCT image_id)
+    -> FROM friends JOIN images
     -> ON friend = image_user
     -> JOIN tags
     -> ON images.id = image_id
     -> GROUP BY friend
     -> HAVING SUM(tagged = user_id) = COUNT(DISTINCT image_id)
     -> ORDER BY COUNT(DISTINCT image_id) DESC
-    -> LIMIT 1;
+    -> LIMIT 1);
 +--------+
 | friend |
 +--------+
