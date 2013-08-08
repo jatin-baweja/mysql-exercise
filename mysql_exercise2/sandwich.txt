@@ -1,29 +1,29 @@
-mysql> CREATE TABLE Tastes (
-    -> Name VARCHAR(30),
-    -> Filling VARCHAR(20),
-    -> PRIMARY KEY (Name, Filling)
+mysql> CREATE TABLE tastes (
+    -> name VARCHAR(30),
+    -> filling VARCHAR(20),
+    -> PRIMARY KEY (name, filling)
     -> );
 Query OK, 0 rows affected (0.16 sec)
 
-mysql> CREATE TABLE Locations (
-    -> LName VARCHAR(30),
-    -> Phone VARCHAR(8),
-    -> Address VARCHAR(100),
-    -> PRIMARY KEY (LName)
+mysql> CREATE TABLE locations (
+    -> lname VARCHAR(30),
+    -> phone VARCHAR(8),
+    -> address VARCHAR(100),
+    -> PRIMARY KEY (lname)
     -> );
 Query OK, 0 rows affected (0.15 sec)
 
-mysql> CREATE TABLE Sandwiches (
-    -> Location VARCHAR(30),
-    -> Bread VARCHAR(15),
-    -> Filling VARCHAR(20),
-    -> Price FLOAT(4,2),
-    -> PRIMARY KEY (Location, Bread, Filling),
-    -> FOREIGN KEY (Location) REFERENCES Locations(LName)
+mysql> CREATE TABLE sandwiches (
+    -> location VARCHAR(30),
+    -> bread VARCHAR(15),
+    -> filling VARCHAR(20),
+    -> price FLOAT(4,2),
+    -> PRIMARY KEY (location, bread, filling),
+    -> FOREIGN KEY (location) REFERENCES locations(lname)
     -> );
 Query OK, 0 rows affected (0.13 sec)
 
-mysql> INSERT INTO Tastes
+mysql> INSERT INTO tastes
     -> VALUES ('Brown', 'Turkey'),
     -> ('Brown', 'Beef'),
     -> ('Brown', 'Ham'),
@@ -34,7 +34,7 @@ mysql> INSERT INTO Tastes
 Query OK, 7 rows affected (0.06 sec)
 Records: 7  Duplicates: 0  Warnings: 0
 
-mysql> INSERT INTO Locations
+mysql> INSERT INTO locations
     -> VALUES ('Lincoln', '6834523', 'Lincoln Place'),
     -> ('O\'Neill\'s', '6742134', 'Pearse St'),
     -> ('Old Nag', '7678132', 'Dame St'),
@@ -42,7 +42,7 @@ mysql> INSERT INTO Locations
 Query OK, 4 rows affected (0.05 sec)
 Records: 4  Duplicates: 0  Warnings: 0
 
-mysql> INSERT INTO Sandwiches
+mysql> INSERT INTO sandwiches
     -> VALUES ('Lincoln', 'Rye', 'Ham', 1.25),
     -> ('O\'Neill\'s', 'White', 'Cheese', 1.20),
     -> ('O\'Neill\'s', 'Whole', 'Ham', 1.25),
@@ -56,35 +56,35 @@ mysql> INSERT INTO Sandwiches
 Query OK, 10 rows affected (0.04 sec)
 Records: 10  Duplicates: 0  Warnings: 0
 
-mysql> SELECT Location FROM Sandwiches
-    -> WHERE Filling IN
-    -> (SELECT Filling FROM Tastes
-    -> WHERE Name = 'Jones');
+mysql> SELECT location FROM sandwiches
+    -> WHERE filling IN
+    -> (SELECT filling FROM tastes
+    -> WHERE name = 'Jones');
 +-----------+
-| Location  |
-+-----------+
-| Buttery   |
-| O'Neill's |
-+-----------+
-2 rows in set (0.00 sec)
-
-mysql> SELECT Location FROM Sandwiches JOIN Tastes
-    -> USING (Filling)
-    -> WHERE Name = 'Jones';
-+-----------+
-| Location  |
+| location  |
 +-----------+
 | Buttery   |
 | O'Neill's |
 +-----------+
 2 rows in set (0.00 sec)
 
-mysql> SELECT Location, COUNT(DISTINCT Name) AS 'Number of People'
-    -> FROM Sandwiches JOIN Tastes
-    -> USING(Filling)
-    -> GROUP BY Location;
+mysql> SELECT location FROM sandwiches JOIN tastes
+    -> USING (filling)
+    -> WHERE name = 'Jones';
++-----------+
+| location  |
++-----------+
+| Buttery   |
+| O'Neill's |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT location, COUNT(DISTINCT name) AS 'Number of People'
+    -> FROM sandwiches JOIN tastes
+    -> USING(filling)
+    -> GROUP BY location;
 +-----------+------------------+
-| Location  | Number of People |
+| location  | Number of People |
 +-----------+------------------+
 | Buttery   |                3 |
 | Lincoln   |                2 |
